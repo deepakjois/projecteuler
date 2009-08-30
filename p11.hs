@@ -64,54 +64,21 @@ maxProduct x y = maximum (map product l)
                        p7 = southeast x y
                        p8 = southwest x y
 
-north x y = [a,b,c,d]
-            where a = g x y
-                  b = g x (y-1)
-                  c = g x (y-2)
-                  d = g x (y-3)
+north x y     = [g x1 y1 | p <- [0..3], let x1 = x,     let y1 = y - p]
+                
+south x y     = [g x1 y1 | p <- [0..3], let x1 = x,     let y1 = y + p]
+                
+east x y      = [g x1 y1 | p <- [0..3], let x1 = x + p, let y1 = y]
+                
+west x y      = [g x1 y1 | p <- [0..3], let x1 = x - p, let y1 = y]
 
-south x y = [a,b,c,d]                  
-            where a = g x y
-                  b = g x (y+1)
-                  c = g x (y+2)
-                  d = g x (y+3)
+northeast x y = [g x1 y1 | p <- [0..3], let x1 = x + p, let y1 = y - p]
 
-east x y = [a,b,c,d]
-            where a = g x y
-                  b = g (x+1) y
-                  c = g (x+2) y
-                  d = g (x+3) y
+northwest x y = [g x1 y1 | p <- [0..3], let x1 = x - p, let y1 = y - p]
 
-west x y = [a,b,c,d]
-            where a = g x y
-                  b = g (x-1) y
-                  c = g (x-2) y
-                  d = g (x-3) y
+southeast x y = [g x1 y1 | p <- [0..3], let x1 = x + p, let y1 = y + p]
 
-northeast x y = [a,b,c,d]
-            where a = g x y
-                  b = g (x+1) (y-1)
-                  c = g (x+2) (y-2)
-                  d = g (x+3) (y-3)
-
-northwest x y = [a,b,c,d]
-            where a = g x y
-                  b = g (x-1) (y-1)
-                  c = g (x-2) (y-2)
-                  d = g (x-3) (y-3)
-
-southeast x y = [a,b,c,d]
-            where a = g x y
-                  b = g (x+1) (y+1)
-                  c = g (x+2) (y+2)
-                  d = g (x+3) (y+3)
-
-southwest x y = [a,b,c,d]
-            where a = g x y
-                  b = g (x-1) (y+1)
-                  c = g (x-2) (y+2)
-                  d = g (x-3) (y+3)
-
+southwest x y = [g x1 y1 | p <- [0..3], let x1 = x - p, let y1 = y + p]
 
 main = do
 print $ maximum [ maxProduct x y | x <- [0..19], y <- [0..19] ]

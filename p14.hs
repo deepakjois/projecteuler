@@ -17,10 +17,32 @@
 
 import Data.Array
 import Data.List
+import qualified Data.Set as S
 
 collatz n | even n = n `div` 2
           | odd  n = 3*n + 1
           
+
+-- original solution (takes forever for 999999)
+collatzSequence n
+              | n == 1    = [1]
+              | otherwise = n:(collatzSequence (collatz n))
+
+
+maxStepsCollatz n = maxStepsCollatz' 2 n (S.fromAscList [2..n]) 1 1
+                     where 
+                       maxStepsCollatz' curr limit remSet maxCurr maxCurrSteps
+                                                                       | curr > limit = (maxCurr,maxCurrSteps)
+                                                                       | S.notMember curr remSet = maxStepsCollatz' (curr+1) limit remSet maxCurr maxCurrSteps
+                                                                       | otherwise    = maxStepsCollatz' (curr+1) limit remSetNew maxNew maxStepsNew
+                                                                                         where
+                                                                                           cs  = collatzSequence curr
+                                                                                           lcs = (length cs)
+                                                                                           remSetNew = foldl' (\s i -> S.delete i s) remSet cs
+                                                                                           (maxNew,maxStepsNew) = if lcs > maxCurrSteps
+                                                                                                                    then (curr,lcs)
+                                                                                                                    else (maxCurr, maxCurrSteps)
+-- solution adapted from a forum soln
 numStepsSeries n = seriesArray
                   where
                     seriesArray = listArray (1,n) $ 0:[numSteps x x | x <- [2..n] ]

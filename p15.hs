@@ -8,7 +8,7 @@ numPaths2x2 c@(x,y)
       | x > 2 || y > 2 = 0
       | otherwise  = numPaths (x+1, y) + numPaths (x, y+1)
 
--- fully recursive solution. Takes forever
+-- fully recursive general solution. Takes forever
 numPaths c@(x,y) n
       | c == (n-1,n-1) = 2
       | c == (n,n-1) = 1
@@ -38,4 +38,3 @@ numPaths_memoized n = seriesMap ! (0,0)
 
 main = do
   print $ numPaths_memoized 20
-

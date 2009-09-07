@@ -35,7 +35,7 @@ numPaths_memoized n = seriesMap ! (0,0)
                                         | otherwise        = insert c sumPaths m    -- add right and down count
                                                               where
                                                                 sumPaths = m!(x+1,y) + m!(x,y+1)
-                                                
+
 main = do
   print $ numPaths_memoized 20
 

@@ -21,9 +21,10 @@ numPaths c@(x,y) n
 -- from the bottom right corner
 numPaths_memoized n = seriesMap ! (0,0)
                       where 
-                        seriesMap   = foldl calcFromMap (fromList []) (genAllTuples n)
-                        genTuples m n =  Prelude.filter (\p@(x,y) -> x == m || y == m)  [ (x,y) | y <- [n,n-1..m], x <- [n,n-1..m]]
-                        genAllTuples n = concat [genTuples m n | m <- [n,n-1..0]]                        
+                        seriesMap   = foldl calcFromMap (fromList []) [ (x,y) | m <- [n,n-1..0],
+                                                                                x <- [n,n-1..m],
+                                                                                y <- [n,n-1..m],
+                                                                                x == m || y == m ]
                         calcFromMap m c@(x,y)
                                         | c == (n-1,n-1)   = insert c 2 m
                                         | c == (n,n-1)     = insert c 1 m

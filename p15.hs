@@ -1,3 +1,10 @@
+-- Starting in the top left corner of a 2x2 grid, there are 6 routes (without
+-- backtracking) to the bottom right corner.
+
+-- <picture>
+
+-- How many routes are there through a 20x20 grid?
+
 import Data.Map
 
 -- fully recursive solution for 2x2 grid
@@ -26,11 +33,10 @@ numPaths_memoized n = seriesMap ! (0,0)
                                                                                 y <- [n,n-1..m],
                                                                                 x == m || y == m ]
                         calcFromMap m c@(x,y)
-                                        | c == (n-1,n-1)   = insert c 2 m
-                                        | c == (n,n-1)     = insert c 1 m
-                                        | c == (n-1,n)     = insert c 1 m
-                                        | c == (n,n)       = insert c 0 m
-                                        | otherwise        = insert c (right+down) m    -- add right and down count
+                                        | c == (n-1,n-1)   = insert c 2 m -- go right, then down OR go down, then right
+                                        | c == (n,n-1)     = insert c 1 m -- go down
+                                        | c == (n-1,n)     = insert c 1 m -- go right
+                                        | otherwise        = insert c (right+down) m -- add right and down count
                                                               where
                                                                 right = findWithDefault 0 (x+1,y) m
                                                                 down  = findWithDefault 0 (x,y+1) m

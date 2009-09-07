@@ -30,11 +30,10 @@ numPaths_memoized n = seriesMap ! (0,0)
                                         | c == (n,n-1)     = insert c 1 m
                                         | c == (n-1,n)     = insert c 1 m
                                         | c == (n,n)       = insert c 0 m
-                                        | x+1 > n          = insert c (m!(x,y+1)) m -- x overflow, add down count only
-                                        | y+1 > n          = insert c (m!(x+1,y)) m -- y overflow, add right count only
-                                        | otherwise        = insert c sumPaths m    -- add right and down count
+                                        | otherwise        = insert c (right+down) m    -- add right and down count
                                                               where
-                                                                sumPaths = m!(x+1,y) + m!(x,y+1)
+                                                                right = findWithDefault 0 (x+1,y) m
+                                                                down  = findWithDefault 0 (x,y+1) m
 
 main = do
   print $ numPaths_memoized 20

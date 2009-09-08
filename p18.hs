@@ -65,46 +65,76 @@ triangle15 =
     [04, 62, 98, 27, 23, 09, 70, 98, 73, 93, 38, 53, 60, 04, 23]
   ]
 
-
-neighbors c@(x,y) n = [(x',y+1) | x' <- [x..x+1], x <= (y+1), x'<n && (y+1)<n ]
-
 genAllTriangleNodes n  = [(x,y) | y <- [0..n-1], x <- [0..y]]
 
-initDistMap n = fromList $ L.map (\x -> (x,0)) $ genAllTriangleNodes n
+
+buildTriangle n values = L.unfoldr fn (values,0)
+                     where
+                       fn (s,l) = if l == n
+                                    then Nothing
+                                    else Just (a,(b,l+1))
+                                      where
+                                        [a,b] = splitAt (l+1) s
 
 
-initPrevMap n = fromList $ L.map (\x -> (x,(0,0))) $ genAllTriangleNodes n
+neighbors c@(x,y) = [(x',y-1) | x' <- [x,x-1], 
+                                x' <= (y-1), 
+                                x'>=0 && (y-1)>=0 ]
+
+maxDist t = 5 + (maximum.concat $ t)
+
+sumDist t = 5 + (sum.concat $ t)
 
 distance t c@(x,y) 
               | y >= (L.length t) = 0
               | otherwise       = (t !! y !! x)
 
+initDistMap t = fromList $ L.map (\x -> (x,maxD)) (genAllTriangleNodes tLength)
+                  where maxD        = sumDist t
+                        tLength     = length t
+
+initPrevMap t = fromList $ L.map (\x -> (x, (tLength, tLength))) (genAllTriangleNodes tLength)
+                  where tLength     = length t
+                        
 maxPath triangle = maxPathIter triangle distMap prevMap nodes
                     where
-                      distMap = insert (0,0) (distance triangle (0,0)) (initDistMap (L.length triangle))
-                      prevMap = initPrevMap (L.length triangle)
-                      nodes   = (genAllTriangleNodes (L.length triangle))
-
+                      initMap     = (initDistMap triangle)
+                      nodes       = (genAllTriangleNodes (L.length triangle))
+                      invertedD c = (maxDist triangle) - (distance triangle c)
+                      insertDistance m c = insert c (invertedD c) m
+                      distMap = L.foldl' insertDistance initMap (L.filter (\(p,q) -> q == (L.length triangle)-1) (nodes))
+                      prevMap = initPrevMap triangle
+                      
 maxPathIter triangle distMap prevMap remainingNodes
-                            | (L.null remainingNodes) = distMap 
+                            | (L.null remainingNodes) = sum $ L.map snd $ path triangle prevMap
                             | otherwise = maxPathIter triangle newDistMap newPrevMap  newRemainingNodes
                                              where
-                                                currNode = L.maximumBy (\a b -> compare  (distMap ! a) (distMap ! b)) remainingNodes
-                                                totalDistance c@(x,y) = (distMap ! currNode) + (distance triangle c)
-                                                
-                                                updateDistMap m node = if (m ! node) < (totalDistance node)
+                                                tLength     = length triangle
+                                                invertedD c = (maxDist triangle) - (distance triangle c)
+                                                totalDistance c = (distMap ! currNode) + (invertedD c)
+
+                                                currNode = L.minimumBy (\a b -> compare  (distMap ! a) (distMap ! b)) remainingNodes
+                                                                                                
+                                                updateDistMap m node = if (m ! node) > (totalDistance node)
                                                                         then insert node (totalDistance node) m
                                                                         else m
-
-                                                updatePrevMap m node = if (distMap ! node) < (totalDistance node)
+                                                
+                                                updatePrevMap m node = if (distMap ! node) > (totalDistance node)
                                                                          then  insert node currNode m
                                                                          else  m
-                                                newDistMap  = L.foldl' updateDistMap distMap (L.filter (\x ->  L.elem x remainingNodes) $ neighbors currNode (length triangle))
-                                                newPrevMap  = L.foldl' updatePrevMap prevMap (L.filter (\x ->  L.elem x remainingNodes) $ neighbors currNode (length triangle))
+                                                
+                                                newDistMap  = L.foldl' updateDistMap distMap (L.filter (\x ->  L.elem x remainingNodes) $ neighbors currNode)
+                                                newPrevMap  = L.foldl' updatePrevMap prevMap (L.filter (\x ->  L.elem x remainingNodes) $ neighbors currNode)
                                                 newRemainingNodes = L.filter (/= currNode) remainingNodes
 
+path t prevMap = pathIter (0,0)
+                   where 
+                     tLength = (length t)
+                     pathIter c
+                            | c == (tLength, tLength) = []
+                            | otherwise =  (c, distance t c) : pathIter (prevMap ! c)
+      
+                                    
+                              
+                              
 
-path (0,0) prevMap = [(0,0)]
-path p prevMap = p : path (prevMap ! p) prevMap
-
-build = L.map (\x -> distance triangle15 x) 

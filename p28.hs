@@ -7,4 +7,4 @@ sumAllDiagonals n = foldl (+) 1  [diagonalSum x | x <- [3,5..n]]
 diagonalSum n = ((4*(n*n)) - (6 * (n-1)))
 
 main = do
- print $ sumAllDiagonals 1001                    
+ print $ sumAllDiagonals 1001

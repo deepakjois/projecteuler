@@ -1,6 +1,6 @@
 import Data.Char
 
-d n | n < 10     = digitToInt $ (show n) !! 0 
+d n | n < 10     = n
     | otherwise = digit
                   where
                     list       = takeWhile (< n) $ scanl1 (+)  $ map (\x -> 9 * (10^x) * (x+1)) [0..]

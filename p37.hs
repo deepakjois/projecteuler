@@ -34,3 +34,12 @@ truncatablePrimes = filter truncatable $ I.toList primeSet
 main = do
   print $ sum $ drop 4 truncatablePrimes
                       
+
+-- Smart code found on forum
+len = length . show
+ 
+left n = all isPrime $ map ((mod n) . (10^)) [1.. len n]
+ 
+right n = all isPrime $ map ((div n) . (10^)) [0.. len n - 1]
+ 
+-- main = sum $ take 11 [ a | a <- [11..], isPrime a && left a && right a]
